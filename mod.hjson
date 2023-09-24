@@ -1,0 +1,23 @@
+#the mod name as displayed in-game
+displayName: "routerchain hexpvp mod"
+
+#the internal name of your mod
+name: "routerchain-java"
+
+#your name
+author: "BasedUser"
+
+#the fully qualified main class of the mod
+main: "org.eu.baseduser.RcHexMod"
+
+#the mod description as seen in the mod dialog
+description: "A Mindustry team PvP addon with trading. Intended as an addon to HexPvP maps."
+
+#the mod version
+version: 1.0
+
+#the minimum game build required to run this mod
+minGameVersion: 146
+
+#this is a java mod
+java: true
