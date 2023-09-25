@@ -1,6 +1,8 @@
 package org.eu.baseduser;
 
 import arc.*;
+import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
@@ -9,8 +11,11 @@ import mindustry.game.*;
 import mindustry.game.EventType.*;
 import mindustry.game.Teams.*;
 import mindustry.gen.*;
+import mindustry.graphics.Pal;
 import mindustry.mod.*;
 import mindustry.type.*;
+import mindustry.world.Edges;
+import mindustry.world.Tile;
 
 public class RcHexMod extends Plugin {
     public static String configPrefix = "rchex-";
@@ -103,6 +108,14 @@ public class RcHexMod extends Plugin {
         values.put(Items.carbide, 40.0f);
         values.put(Items.fissileMatter, 25.0f);
         values.put(Items.dormantCyst, 20.0f);
+
+        Events.on(BlockBuildEndEvent.class, e -> {
+            for(TeamData team : Vars.state.teams.active){
+                for(Building build : team.buildings){
+                    checkStation(build);
+                }
+            }
+        });
     }
   
     public Team getRandTeam() {
@@ -216,4 +229,32 @@ public class RcHexMod extends Plugin {
         });
     }
 
+    public static void checkStation(Building build){
+        if(build.block != Blocks.container) return;
+        Building right = build.nearby(Blocks.container.size, 0);
+                    
+        if(right != null && build.y == right.y && right.block == Blocks.container && right.team != build.team){
+            Call.label("Trade station", (build.x + right.x) / 2, build.y, 1f);
+
+            Building topA = build.nearby(1, Blocks.container.size);
+            if(topA != null && topA.block == Blocks.sorter || topA.block == Blocks.battery && topA.team == build.team){
+                Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, topA.block);
+            }
+
+            Building bottomA = build.nearby(1, -1);
+            if(bottomA != null && bottomA.block == Blocks.sorter || bottomA.block == Blocks.battery && bottomA.team == build.team){
+                Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, bottomA.block);
+            }
+
+            Building topB = build.nearby(0, Blocks.container.size);
+            if(topB != null && topB.block == Blocks.sorter || topB.block == Blocks.battery && topB.team == right.team){
+                Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, topB.block);
+            }
+
+            Building bottomB = right.nearby(0, Blocks.container.size);
+            if(bottomB != null && bottomB.block == Blocks.sorter || bottomB.block == Blocks.battery && bottomB.team == right.team){
+                Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, bottomB.block);
+            }
+        }
+    }
 }
