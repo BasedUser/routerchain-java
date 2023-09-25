@@ -234,26 +234,27 @@ public class RcHexMod extends Plugin {
         Building right = build.nearby(Blocks.container.size, 0);
                     
         if(right != null && build.y == right.y && right.block == Blocks.container && right.team != build.team){
-            Call.label("Trade station", (build.x + right.x) / 2, build.y, 1f);
+            Call.effect(Fx.coreBuildBlock, build.x, build.y, 0, Pal.accent, build.block);
+            Call.effect(Fx.coreBuildBlock, right.x, right.y, 0, Pal.accent, build.block);
 
             Building topA = build.nearby(1, Blocks.container.size);
-            if(topA != null && topA.block == Blocks.sorter || topA.block == Blocks.battery && topA.team == build.team){
+            if(topA != null && (topA.block == Blocks.sorter || topA.block == Blocks.battery) && topA.team == build.team){
                 Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, topA.block);
             }
 
             Building bottomA = build.nearby(1, -1);
-            if(bottomA != null && bottomA.block == Blocks.sorter || bottomA.block == Blocks.battery && bottomA.team == build.team){
-                Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, bottomA.block);
+            if(bottomA != null && (bottomA.block == Blocks.sorter || bottomA.block == Blocks.battery) && bottomA.team == build.team){
+                Call.effect(Fx.coreBuildBlock, bottomA.x, bottomA.y, 0, Pal.accent, bottomA.block);
             }
 
-            Building topB = build.nearby(0, Blocks.container.size);
-            if(topB != null && topB.block == Blocks.sorter || topB.block == Blocks.battery && topB.team == right.team){
-                Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, topB.block);
+            Building topB = right.nearby(0, Blocks.container.size);
+            if(topB != null && (topB.block == Blocks.sorter || topB.block == Blocks.battery) && topB.team == right.team){
+                Call.effect(Fx.coreBuildBlock, topB.x, topB.y, 0, Pal.accent, topB.block);
             }
 
-            Building bottomB = right.nearby(0, Blocks.container.size);
-            if(bottomB != null && bottomB.block == Blocks.sorter || bottomB.block == Blocks.battery && bottomB.team == right.team){
-                Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, bottomB.block);
+            Building bottomB = right.nearby(0, -1);
+            if(bottomB != null && (bottomB.block == Blocks.sorter || bottomB.block == Blocks.battery) && bottomB.team == right.team){
+                Call.effect(Fx.coreBuildBlock, bottomB.x, bottomB.y, 0, Pal.accent, bottomB.block);
             }
         }
     }
