@@ -4,19 +4,18 @@ import arc.Events;
 import arc.struct.Seq;
 import arc.util.Log;
 import mindustry.content.Blocks;
-import mindustry.game.EventType;
-import mindustry.game.EventType.Trigger;
+import mindustry.game.EventType.*;
 import mindustry.gen.Building;
 
 public class TradePosts {
         public Seq<TradePost> posts = new Seq<>();
 
         public TradePosts(){
-            Events.on(EventType.Trigger.update.class, e -> {
-                posts.each(p -> {
+            // Events.on(Trigger.update.class, e -> {
+            //     posts.each(p -> {
 
-                });
-            });
+            //     });
+            // });
         }
 
         public TradePost tradePost(Building container){
