@@ -1,19 +1,22 @@
 package org.eu.baseduser;
 
+import arc.Events;
 import arc.struct.Seq;
 import arc.util.Log;
 import mindustry.content.Blocks;
+import mindustry.game.EventType;
+import mindustry.game.EventType.Trigger;
 import mindustry.gen.Building;
 
 public class TradePosts {
         public Seq<TradePost> posts = new Seq<>();
 
         public TradePosts(){
-            // Events.on(EventType.Trigger.update.class, e -> {
-            //     posts.each(p -> {
+            Events.on(EventType.Trigger.update.class, e -> {
+                posts.each(p -> {
 
-            //     });
-            // });
+                });
+            });
         }
 
         public TradePost tradePost(Building container){
@@ -53,19 +56,21 @@ public class TradePosts {
         }
 
         public static boolean hasIndicators(Building leftContainer, Building rightContainer){
-            if(rightContainer != null && leftContainer.y == rightContainer.y && leftContainer.block == Blocks.container && rightContainer.block == Blocks.container && rightContainer.team != leftContainer.team) return false;
+            if(leftContainer != null && rightContainer != null && leftContainer.y == rightContainer.y && leftContainer.block == Blocks.container && rightContainer.block == Blocks.container && rightContainer.team != leftContainer.team){
 
-            Building topA, bottomA, topB, bottomB;
-            topA = leftContainer.nearby(1, 2);
-            topB = rightContainer.nearby(0, 2);
-            bottomA = leftContainer.nearby(1, -1);
-            bottomB = rightContainer.nearby(0, -1);
+                Building topA, bottomA, topB, bottomB;
+                topA = leftContainer.nearby(1, 2);
+                topB = rightContainer.nearby(0, 2);
+                bottomA = leftContainer.nearby(1, -1);
+                bottomB = rightContainer.nearby(0, -1);
 
-            return 
-                    topA != null && (topA.block == Blocks.sorter || topA.block == Blocks.battery) && topA.team == leftContainer.team &&
-                    bottomA != null && (bottomA.block == Blocks.sorter || bottomA.block == Blocks.battery) && bottomA.team == leftContainer.team &&
-                    topB != null && (topB.block == Blocks.sorter || topB.block == Blocks.battery) && topB.team == rightContainer.team &&
-                    bottomB != null && (bottomB.block == Blocks.sorter || bottomB.block == Blocks.battery) && bottomB.team == rightContainer.team;
+                return 
+                        topA != null && (topA.block == Blocks.sorter || topA.block == Blocks.battery) && topA.team == leftContainer.team &&
+                        bottomA != null && (bottomA.block == Blocks.sorter || bottomA.block == Blocks.battery) && bottomA.team == leftContainer.team &&
+                        topB != null && (topB.block == Blocks.sorter || topB.block == Blocks.battery) && topB.team == rightContainer.team &&
+                        bottomB != null && (bottomB.block == Blocks.sorter || bottomB.block == Blocks.battery) && bottomB.team == rightContainer.team;
+            }
+            return false;
         }
 
         public class TradePost {
