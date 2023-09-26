@@ -1,8 +1,6 @@
 package org.eu.baseduser;
 
 import arc.*;
-import arc.math.geom.Geometry;
-import arc.math.geom.Point2;
 import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
@@ -14,10 +12,10 @@ import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.mod.*;
 import mindustry.type.*;
-import mindustry.world.Edges;
-import mindustry.world.Tile;
 
 public class RcHexMod extends Plugin {
+    public TradePosts tradePosts = new TradePosts();
+
     public static String configPrefix = "rchex-";
 
     public enum Config{
@@ -112,7 +110,10 @@ public class RcHexMod extends Plugin {
         Events.on(BlockBuildEndEvent.class, e -> {
             for(TeamData team : Vars.state.teams.active){
                 for(Building build : team.buildings){
-                    checkStation(build);
+                    if(tradePosts.attemptAddTradePost(build) != null){
+                        Building right = build.nearby(Blocks.container.size, 0);
+                        Call.effect(Fx.explosion, (build.x + right.x) / 2f, build.y, 10, Pal.orangeSpark);
+                    }
                 }
             }
         });
@@ -227,32 +228,5 @@ public class RcHexMod extends Plugin {
                 Log.err("Unknown config: '@'. Run the command with no arguments to get a list of valid configs.", args[0]);
             }
         });
-    }
-
-    public void checkStation(Building build){
-        if(build.block != Blocks.container) return;
-        Building right = build.nearby(Blocks.container.size, 0);
-                    
-        if(right != null && build.y == right.y && right.block == Blocks.container && right.team != build.team){
-            Building topA, bottomA, topB, bottomB;
-            topA = build.nearby(1, 2);
-            bottomA = build.nearby(1, -1);
-            topB = right.nearby(0, 2);
-            bottomB = right.nearby(0, -1);
-
-            if(
-                topA != null && (topA.block == Blocks.sorter || topA.block == Blocks.battery) && topA.team == build.team &&
-                bottomA != null && (bottomA.block == Blocks.sorter || bottomA.block == Blocks.battery) && bottomA.team == build.team &&
-                topB != null && (topB.block == Blocks.sorter || topB.block == Blocks.battery) && topB.team == right.team &&
-                bottomB != null && (bottomB.block == Blocks.sorter || bottomB.block == Blocks.battery) && bottomB.team == right.team
-            ){
-                Call.effect(Fx.coreBuildBlock, build.x, build.y, 0, Pal.accent, build.block);
-                Call.effect(Fx.coreBuildBlock, right.x, right.y, 0, Pal.accent, build.block);
-                Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, topA.block);
-                Call.effect(Fx.coreBuildBlock, bottomA.x, bottomA.y, 0, Pal.accent, bottomA.block);
-                Call.effect(Fx.coreBuildBlock, topB.x, topB.y, 0, Pal.accent, topB.block);
-                Call.effect(Fx.coreBuildBlock, bottomB.x, bottomB.y, 0, Pal.accent, bottomB.block);
-            }
-        }
     }
 }
