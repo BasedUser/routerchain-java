@@ -107,6 +107,10 @@ public class RcHexMod extends Plugin {
         values.put(Items.fissileMatter, 25.0f);
         values.put(Items.dormantCyst, 20.0f);
 
+        Events.run(Trigger.update, () -> {
+            tradePosts.update();
+        });
+
         Events.on(BlockBuildEndEvent.class, e -> {
             for(TeamData team : Vars.state.teams.active){
                 for(Building build : team.buildings){

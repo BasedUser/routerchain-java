@@ -1,25 +1,24 @@
 package org.eu.baseduser;
 
-import arc.Events;
 import arc.struct.Seq;
 import arc.util.Log;
 import mindustry.content.Blocks;
-import mindustry.game.EventType.*;
 import mindustry.gen.Building;
+import mindustry.gen.Groups;
 
 public class TradePosts {
         public Seq<TradePost> posts = new Seq<>();
 
         public TradePosts(){
-            // Events.on(Trigger.update.class, e -> {
-            //     posts.each(p -> {
+            
+        }
 
-            //     });
-            // });
+        public void update(){
+
         }
 
         public TradePost tradePost(Building container){
-            if(!isTradePost(container)) return null;
+            if(!isTradePost(container) && isInTradePosts(container)) return null;
 
             return new TradePost(){{
                 this.leftContainer = container;
@@ -36,6 +35,10 @@ public class TradePosts {
                 return post;
             };
             return null;
+        }
+
+        public void reset(){
+            posts.clear();
         }
         
         public boolean isInTradePosts(Building container){
