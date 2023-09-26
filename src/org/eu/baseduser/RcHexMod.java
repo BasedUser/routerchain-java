@@ -229,26 +229,23 @@ public class RcHexMod extends Plugin {
         });
     }
 
-    public static void checkStation(Building build){
+    public void checkStation(Building build){
         if(build.block != Blocks.container) return;
         Building right = build.nearby(Blocks.container.size, 0);
                     
         if(right != null && build.y == right.y && right.block == Blocks.container && right.team != build.team){
             Building topA, bottomA, topB, bottomB;
-            boolean a, b, c, d;
             topA = build.nearby(1, 2);
-            a = topA != null && (topA.block == Blocks.sorter || topA.block == Blocks.battery) && topA.team == build.team;
-
             bottomA = build.nearby(1, -1);
-            b = bottomA != null && (bottomA.block == Blocks.sorter || bottomA.block == Blocks.battery) && bottomA.team == build.team;
-
             topB = right.nearby(0, 2);
-            c = topB != null && (topB.block == Blocks.sorter || topB.block == Blocks.battery) && topB.team == right.team;
-
             bottomB = right.nearby(0, -1);
-            d = bottomB != null && (bottomB.block == Blocks.sorter || bottomB.block == Blocks.battery) && bottomB.team == right.team;
 
-            if(a && b && c && d){
+            if(
+                topA != null && (topA.block == Blocks.sorter || topA.block == Blocks.battery) && topA.team == build.team &&
+                bottomA != null && (bottomA.block == Blocks.sorter || bottomA.block == Blocks.battery) && bottomA.team == build.team &&
+                topB != null && (topB.block == Blocks.sorter || topB.block == Blocks.battery) && topB.team == right.team &&
+                bottomB != null && (bottomB.block == Blocks.sorter || bottomB.block == Blocks.battery) && bottomB.team == right.team
+            ){
                 Call.effect(Fx.coreBuildBlock, build.x, build.y, 0, Pal.accent, build.block);
                 Call.effect(Fx.coreBuildBlock, right.x, right.y, 0, Pal.accent, build.block);
                 Call.effect(Fx.coreBuildBlock, topA.x, topA.y, 0, Pal.accent, topA.block);
