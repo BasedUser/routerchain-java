@@ -1,5 +1,7 @@
 package org.eu.baseduser;
 
+import org.eu.baseduser.TradePosts.TradePost;
+
 import arc.*;
 import arc.struct.*;
 import arc.util.*;
@@ -116,9 +118,9 @@ public class RcHexMod extends Plugin {
         Events.on(BlockBuildEndEvent.class, e -> {
             for(TeamData team : Vars.state.teams.active){
                 for(Building build : team.buildings){
-                    if(tradePosts.attemptAddTradePost(build) != null){
-                        Building right = build.nearby(Blocks.container.size, 0);
-                        Call.effect(Fx.explosion, (build.x + right.x) / 2f, build.y, 10, Pal.orangeSpark);
+                    TradePost post = tradePosts.attemptAddTradePost(build);
+                    if(post != null){
+                        // Call.effect(Fx.explosion, post.x(), post.y(), 10, Pal.orangeSpark);
                     }
                 }
             }
