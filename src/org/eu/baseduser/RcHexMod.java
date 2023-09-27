@@ -14,6 +14,7 @@ import mindustry.gen.*;
 import mindustry.graphics.Pal;
 import mindustry.mod.*;
 import mindustry.type.*;
+import mindustry.world.blocks.distribution.Sorter.SorterBuild;
 
 public class RcHexMod extends Plugin {
     public TradePosts tradePosts = new TradePosts();
@@ -111,7 +112,21 @@ public class RcHexMod extends Plugin {
 
         Events.run(Trigger.update, () -> {
             tradePosts.posts.each(post -> {
+                if(post.shouldTrade()){
+                    if(post.leftOutIndicator().block == Blocks.sorter){
+                        SorterBuild sorter = (SorterBuild) post.leftOutIndicator();
+                        post.leftContainer.items.add(sorter.sortItem, 1);
+                        post.rightContainer.items.remove(sorter.sortItem, 1);
+                    }
+                    
+                    if(post.leftInIndicator().block == Blocks.sorter){
+                        SorterBuild sorter = (SorterBuild) post.leftInIndicator();
+                        post.rightContainer.items.add(sorter.sortItem, 1);
+                        post.leftContainer.items.remove(sorter.sortItem, 1);
+                    }
 
+                    post.updateInfo(Strings.format("Trade status:\nLeft Traded @, Right Traded @", ++post.leftLifetimeTraded, post.rightLifetimeTraded++));
+                }
             });
         });
 

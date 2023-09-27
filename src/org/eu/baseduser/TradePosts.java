@@ -5,6 +5,9 @@ import arc.util.Log;
 import mindustry.content.Blocks;
 import mindustry.gen.Building;
 import mindustry.gen.WorldLabel;
+import mindustry.type.Item;
+import mindustry.world.blocks.distribution.Sorter.SorterBuild;
+import mindustry.world.blocks.power.Battery.BatteryBuild;
 
 public class TradePosts {
         public Seq<TradePost> posts = new Seq<>();
@@ -73,8 +76,11 @@ public class TradePosts {
         public class TradePost {
             Building leftContainer;
             Building rightContainer;
+
+            // TODO: use Item equivalent values on this
             float leftLifetimeTraded;
             float rightLifetimeTraded;
+
             WorldLabel info;
 
             public TradePost(Building leftContainer, Building rightContainer){
@@ -94,6 +100,52 @@ public class TradePosts {
 
             public float y(){
                 return (leftContainer.y + rightContainer.y) / 2f;
+            }
+
+            public boolean isValidTradePost(){
+                return TradePosts.isTradePost(leftContainer);
+            }
+
+            public boolean canTrade(){
+                if(leftOutIndicator().block == rightInIndicator().block && leftInIndicator().block == rightOutIndicator().block){
+                    boolean leftTrade = true, rightTrade = true;
+                    if(leftOutIndicator().block == Blocks.sorter){
+                        SorterBuild leftSorter = (SorterBuild) leftOutIndicator(), rightSorter = (SorterBuild) rightInIndicator();
+
+                        rightTrade = leftSorter.sortItem != null && leftSorter.sortItem == rightSorter.sortItem ;
+                    }
+                    if(leftInIndicator().block == Blocks.sorter){
+                        SorterBuild leftSorter = (SorterBuild) leftInIndicator(), rightSorter = (SorterBuild) rightOutIndicator();
+                        leftTrade = leftSorter.sortItem != null && leftSorter.sortItem == rightSorter.sortItem;
+                    }
+                    if(!(leftTrade && rightTrade)){
+                        updateInfo("Trade Post:\nPossible misconfiguration?");
+                    }
+                    return leftTrade && rightTrade;
+                }
+                return false;
+            }
+            
+            public boolean shouldTrade(){
+                if(canTrade()){
+                    boolean rightSufficient = true, leftSufficient = true;
+                    if(leftOutIndicator().block == Blocks.sorter){
+                        SorterBuild sorter = (SorterBuild) leftOutIndicator();
+                        rightSufficient = rightContainer.items.has(sorter.sortItem) && leftContainer.acceptItem(leftContainer, sorter.sortItem);
+                    } else {
+                        // BatteryBuild battery = (BatteryBuild) leftOutIndicator();
+                    }
+                    
+                    if(leftInIndicator().block == Blocks.sorter){
+                        
+                        SorterBuild sorter = (SorterBuild) leftInIndicator();
+                        leftSufficient = leftContainer.items.has(sorter.sortItem) && rightContainer.acceptItem(leftContainer, sorter.sortItem);
+                    } else {
+                        // BatteryBuild battery = (BatteryBuild) leftOutIndicator();
+                    }
+                    return rightSufficient && leftSufficient;
+                }
+                return false;
             }
 
             public void updateInfo(String msg){
