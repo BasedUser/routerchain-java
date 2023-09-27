@@ -5,9 +5,7 @@ import arc.util.Log;
 import mindustry.content.Blocks;
 import mindustry.gen.Building;
 import mindustry.gen.WorldLabel;
-import mindustry.type.Item;
 import mindustry.world.blocks.distribution.Sorter.SorterBuild;
-import mindustry.world.blocks.power.Battery.BatteryBuild;
 
 public class TradePosts {
         public Seq<TradePost> posts = new Seq<>();
@@ -111,15 +109,11 @@ public class TradePosts {
                     boolean leftTrade = true, rightTrade = true;
                     if(leftOutIndicator().block == Blocks.sorter){
                         SorterBuild leftSorter = (SorterBuild) leftOutIndicator(), rightSorter = (SorterBuild) rightInIndicator();
-
                         rightTrade = leftSorter.sortItem != null && leftSorter.sortItem == rightSorter.sortItem ;
                     }
                     if(leftInIndicator().block == Blocks.sorter){
                         SorterBuild leftSorter = (SorterBuild) leftInIndicator(), rightSorter = (SorterBuild) rightOutIndicator();
                         leftTrade = leftSorter.sortItem != null && leftSorter.sortItem == rightSorter.sortItem;
-                    }
-                    if(!(leftTrade && rightTrade)){
-                        updateInfo("Trade Post:\nPossible misconfiguration?");
                     }
                     return leftTrade && rightTrade;
                 }

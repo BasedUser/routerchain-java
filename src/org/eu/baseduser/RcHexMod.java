@@ -110,27 +110,54 @@ public class RcHexMod extends Plugin {
         values.put(Items.fissileMatter, 25.0f);
         values.put(Items.dormantCyst, 20.0f);
 
+        /* Trade Logic */
         Events.run(Trigger.update, () -> {
+            if(Vars.netClient == null) return;
+            // TODO: Make this saner, I put this here so I can access the item value objMap
             tradePosts.posts.each(post -> {
-                if(post.shouldTrade()){
-                    if(post.leftOutIndicator().block == Blocks.sorter){
-                        SorterBuild sorter = (SorterBuild) post.leftOutIndicator();
-                        post.leftContainer.items.add(sorter.sortItem, 1);
-                        post.rightContainer.items.remove(sorter.sortItem, 1);
-                    }
+                if(!post.isValidTradePost()){
+                    post.info.hide();
+                    tradePosts.posts.remove(post);
+                } else if(post.canTrade()){
+                    post.updateInfo("Trade Post:\n Ready to trade.");
+                    if(post.shouldTrade()){
+                        if(post.leftOutIndicator().block == Blocks.sorter){
+                            SorterBuild sorter = (SorterBuild) post.leftOutIndicator();
+                            post.leftContainer.items.add(sorter.sortItem, 1);
+                            post.rightContainer.items.remove(sorter.sortItem, 1);
+                        } else {
+                            // TODO: Power transfer
+                        }
                     
-                    if(post.leftInIndicator().block == Blocks.sorter){
-                        SorterBuild sorter = (SorterBuild) post.leftInIndicator();
-                        post.rightContainer.items.add(sorter.sortItem, 1);
-                        post.leftContainer.items.remove(sorter.sortItem, 1);
-                    }
+                        if(post.leftInIndicator().block == Blocks.sorter){
+                            SorterBuild sorter = (SorterBuild) post.leftInIndicator();
+                            post.rightContainer.items.add(sorter.sortItem, 1);
+                            post.leftContainer.items.remove(sorter.sortItem, 1);
+                        } else {
+                            // TODO: Power transfer
+                        }
 
-                    post.updateInfo(Strings.format("Trade status:\nLeft Traded @, Right Traded @", ++post.leftLifetimeTraded, post.rightLifetimeTraded++));
-                }
+                        post.updateInfo(Strings.format("Trade status:\nLeft Traded @, Right Traded @", ++post.leftLifetimeTraded, post.rightLifetimeTraded++));
+                    }
+                } else post.updateInfo("Trade Post:\nPossible misconfiguration?");
+                
             });
         });
 
         Events.on(BlockBuildEndEvent.class, e -> {
+            if(Vars.netClient == null) return;
+            for(TeamData team : Vars.state.teams.active){
+                for(Building build : team.buildings){
+                    TradePost post = tradePosts.attemptAddTradePost(build);
+                    if(post != null){
+                        // Call.effect(Fx.explosion, post.x(), post.y(), 10, Pal.orangeSpark);
+                    }
+                }
+            }
+        });
+
+        Events.on(WorldLoadEndEvent.class, e -> {
+            if(Vars.netClient == null) return;
             for(TeamData team : Vars.state.teams.active){
                 for(Building build : team.buildings){
                     TradePost post = tradePosts.attemptAddTradePost(build);
