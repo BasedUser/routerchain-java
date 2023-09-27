@@ -108,7 +108,9 @@ public class RcHexMod extends Plugin {
         values.put(Items.dormantCyst, 20.0f);
 
         Events.run(Trigger.update, () -> {
-            tradePosts.update();
+            tradePosts.posts.each(post -> {
+
+            });
         });
 
         Events.on(BlockBuildEndEvent.class, e -> {

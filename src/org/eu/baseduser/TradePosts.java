@@ -4,7 +4,7 @@ import arc.struct.Seq;
 import arc.util.Log;
 import mindustry.content.Blocks;
 import mindustry.gen.Building;
-import mindustry.gen.Groups;
+import mindustry.gen.WorldLabel;
 
 public class TradePosts {
         public Seq<TradePost> posts = new Seq<>();
@@ -13,17 +13,10 @@ public class TradePosts {
             
         }
 
-        public void update(){
-
-        }
-
         public TradePost tradePost(Building container){
-            if(!isTradePost(container) && isInTradePosts(container)) return null;
+            if(isInTradePosts(container) || !isTradePost(container)) return null;
 
-            return new TradePost(){{
-                this.leftContainer = container;
-                rightContainer = container.nearby(Blocks.container.size, 0);
-            }};
+            return new TradePost(container, container.nearby(2, 0));
         }
 
         public TradePost attemptAddTradePost(Building container){
@@ -31,7 +24,7 @@ public class TradePosts {
 
             if(post != null) {
                 posts.add(post);
-                Log.info("Trade post added at {}", post.x(), post.y());
+                Log.info("Trade post added at @, @", post.x(), post.y());
                 return post;
             };
             return null;
@@ -58,8 +51,10 @@ public class TradePosts {
         }
 
         public static boolean hasIndicators(Building leftContainer, Building rightContainer){
-            if(leftContainer != null && rightContainer != null && leftContainer.y == rightContainer.y && leftContainer.block == Blocks.container && rightContainer.block == Blocks.container && rightContainer.team != leftContainer.team){
-
+            if(leftContainer != null && rightContainer != null &&
+                    leftContainer.y == rightContainer.y &&
+                    leftContainer.block == Blocks.container && rightContainer.block == Blocks.container &&
+                    rightContainer.team != leftContainer.team){
                 Building topA, bottomA, topB, bottomB;
                 topA = leftContainer.nearby(1, 2);
                 topB = rightContainer.nearby(0, 2);
@@ -80,6 +75,18 @@ public class TradePosts {
             Building rightContainer;
             float leftLifetimeTraded;
             float rightLifetimeTraded;
+            WorldLabel info;
+
+            public TradePost(Building leftContainer, Building rightContainer){
+                this.leftContainer = leftContainer;
+                this.rightContainer = rightContainer;
+
+                info = WorldLabel.create();
+                info.set(x(), y());
+                info.add();
+
+                updateInfo("Trade Post created!");
+            }
 
             public float x(){
                 return (leftContainer.x + rightContainer.x) / 2f;
@@ -87,6 +94,10 @@ public class TradePosts {
 
             public float y(){
                 return (leftContainer.y + rightContainer.y) / 2f;
+            }
+
+            public void updateInfo(String msg){
+                info.text = msg;
             }
 
             public Building leftOutIndicator(){
